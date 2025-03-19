@@ -1,0 +1,68 @@
+# if you want to use a different version of gcc then
+# replace the `gcc:latest` below.
+# see: https://hub.docker.com/_/gcc
+Bootstrap: docker
+From: gcc:latest
+
+%environment
+    export DATA_DIR="{{ data_dir }}"
+    export PATH="/opt/openmpi/bin:$PATH"
+    export LD_LIBRARY_PATH="/opt/openmpi/lib:$LD_LIBRARY_PATH"
+    export DGD=$DATA_DIR/gdtkinst
+    export DGD_REPO=$DATA_DIR/gdtk
+    export PATH=$PATH:$DGD/bin
+    export DGD_LUA_PATH=$DGD/lib/?.lua
+    export DGD_LUA_CPATH=$DGD/lib/?.so
+
+%post
+    # this container uses the hybrid container approach, so we build an appropriate version of openmpi
+    mkdir -p /tmp/openmpi
+    cd /tmp/openmpi && wget "https://download.open-mpi.org/release/open-mpi/{{ openmpi_major_version }}/{{ openmpi_release_name }}.tar.bz2" && tar -xjf {{ openmpi_release_name}}.tar.bz2
+
+    cd /tmp/openmpi/{{ openmpi_release_name }} && ./configure --prefix=/opt/openmpi && make -j$(nproc) install
+
+    cd /tmp
+    wget https://dlang.org/install.sh && chmod +x install.sh
+
+    # install the specified compiler and dub
+    ./install.sh -p /opt/dlang {{ which_compiler }},{{ which_dub }}
+     echo "source $(/opt/dlang/install.sh install -p /opt/dlang {{ which_compiler }} -a)" >> "${APPTAINER_ENVIRONMENT}"
+
+    # set DMD to be ldc2
+    echo 'export DMD=ldc2' >> "${APPTAINER_ENVIRONMENT}"
+
+    echo 'export PATH=/opt/openmpi/bin:$PATH' >> "${APPTAINER_ENVIRONMENT}"
+    echo 'export LD_LIBRARY_PATH=/opt/openmpi/lib:$LD_LIBRARY_PATH' >> "${APPTAINER_ENVIRONMENT}"
+    echo 'export "PS1=[\u@gdtk-container \W]\$ "' >> "${APPTAINER_ENVIRONMENT}"
+
+%arguments
+    # set compiler. Can use a specific version with ldc-<version>
+    # install.sh script: https://dlang.org/install.html
+    which_compiler=ldc
+
+    # which_dub=dub will install the latest stable
+    # can also use dub-<version>.
+    which_dub=dub
+
+    # the openmpi major version and filename of the tarball to download
+    # these should match the host system mpi version
+    # the variables below expand to "https://download.open-mpi.org/release/{{ openmpi_major_version }}/{{ openmpi_release_name }}.tar.bz2"
+    # check the openmpi website download links to get the correct value.
+    # This is the correct version for use on Bunya, as of 2024-Mar-19.
+    # It should work fine as long as the host MPI version >= to the container mpi version (not tested)
+    openmpi_major_version=v5.0
+    openmpi_release_name=openmpi-5.0.3
+
+    # where gdtk will be installed and built when running `apptainer run <container_name>`
+    # NOTE: this has to be a writeable directory in the container. By default, apptainer binds
+    # the user home directory on the host in this fashion. If you want to use some other directory,
+    # then when calling any apptainer commands, you need to specify the appropriate combo of:
+    #        `--bind <host data_dir location>:<the data_dir value below>`.
+    data_dir=$HOME/.local/share/gdtk_container
+
+%runscript
+    # this script will build lmr and install it in the `data_dir` above.
+    # the DGD, DGD_REPO, etc environment variables are set in `%environment` above
+    git clone https://github.com/gdtk-uq/gdtk $DGD_REPO
+    cd $DGD_REPO/src/lmr
+    make INSTALL_DIR=$DGD install
