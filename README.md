@@ -3,6 +3,8 @@ The container debian 12 and includes the latest `gcc` distribution, the latest `
 
 Running the container builds and installs `lmr`.
 
+This container is set up to use the hybrid openmpi approach described in the apptainer docs. It should be very easy to convert it to use the bind based approach as long as the HPC system has a sane layout for the location of the openmpi binaries and libraries.
+
 # Quickstart
 The host system should have `apptainer` installed, as well as `openmpi >= v5.0.3` (if you want to use the mpi executables)
 
