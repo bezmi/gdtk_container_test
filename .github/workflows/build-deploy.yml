@@ -1,0 +1,43 @@
+# uses uw-psych/apptainer-actions:
+# https://github.com/uw-psych/apptainer-actions/tree/main/build-and-push
+
+name: Build and push Apptainer image
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+      - 'v*.*.*-*'
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    name: Build Apptainer image
+    permissions:
+        contents: read
+        packages: write
+    steps:
+      - name: Install Apptainer
+        uses: uw-psych/apptainer-actions/setup@main
+      - name: Clear disk space
+        uses: uw-psych/apptainer-actions/make-disk-space@main
+      - name: Check out code for the container build
+        uses: actions/checkout@v4
+      - name: Get version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
+            case "${GITHUB_REF_NAME:-}" in
+              v?*) IMAGE_VERSION="${GITHUB_REF_NAME#v}";;
+              *) echo "Invalid tag: \"${GITHUB_REF_NAME:-}\"" >&2; exit 1;;
+            esac
+            echo "IMAGE_VERSION=${IMAGE_VERSION}" >> "${GITHUB_ENV}"
+          fi
+      - name: Build and push Apptainer image
+        uses: uw-psych/apptainer-actions/build-and-push@main
+        with:
+          deffile: gdtk_container.def
+          image-version: ${{ env.IMAGE_VERSION }}
+
+

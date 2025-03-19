@@ -1,6 +1,47 @@
-Put `gdtk_container.def` in a clean directory.
+This is a test repository for a development container of gdtk.
+The container debian 12 and includes the latest `gcc` distribution, the latest `ldc`, `dub` and a recent version of openmpi.
 
-## Build and develpoment
+Running the container builds and installs `lmr`.
+
+# Quickstart
+The host system should have `apptainer` installed, as well as `openmpi >= v5.0.3` (if you want to use the mpi executables)
+
+First, pull the container from `ghcr`:
+```sh
+apptainer pull gdtk_container.sif oras://ghcr.io/bezmi/gdtk_container_test/gdtk_container_test:latest
+```
+
+There should be a compressed container image in the directory where you ran the command above. Now you can run the container:
+```sh
+apptainer run gdtk_container.sif
+
+```
+This will build and install `lmr` in the container.
+The repository and install location are set to `$HOME/.local/share/gdtk_container` and can be accessed from the host.
+
+You can use standard `lmr` binaries and their associated commands. Just prefix them with `apptainer exec gdtk_container.sif`.
+For example, to run the `lmr` binary, which just outputs a help message:
+
+```sh
+apptainer run gdtk_container.sif lmr
+```
+
+# Test scripts and tips
+- `build.sh` will build the container should be run on your local workstation.
+- `BUNYA_USERNAME=your_username ./deploy.sh` will deploy it to Bunya. It needs interactive authentication so it's not the most practical thing. You can always copy `gdtk_container.sif` manually.
+
+- `test.sh` can be run on bunya to actually use the container. It uses `apptainer run`, pulling a fresh copy to access a shell in the container.
+
+- To run a shell in the container, use:
+```sh
+apptainer shell <path-to-container>.sif
+```
+NOTE: Only the user specified of default bindmounts (such as your home directory) will be writable.
+
+# Building locally.
+If you want to change openmpi versions, gdtk install path or the `gcc`, `ldc` or `dub` versions, then you should build locally.
+
+First, clone this repo
 Run this step locally. The generated container can then be used anywhere.
 ```sh
 apptainer build <container-name>.sif gdtk_container.def
@@ -31,23 +72,5 @@ For example, to change the openmpi version that gets downloaded and installed, y
 apptainer build --build-arg openmpi_major_version=v5.0 --build-arg openmpi_release_name=openmpi-5.0.3 <container-name>.sif gdtk_container.def
 ```
 
-## Building and Running `lmr`
-After building a container, run:
-```sh
-apptainer run <path-to-container>
-```
-
-This will clone gdtk and build + install lmr into your home directory at `$HOME/.local/share/gdtk_container` (unless you change `data_dir` when building the container).
-
-You can use standard `lmr` binaries and their associated commands. Just prefix them with `apptainer exec <path-to-gdtk-container>.sif`.
-
-### Test scripts and tips
-The script `build.sh` will build the container should be run on your local workstation.
-`BUNYA_USERNAME=your_username ./deploy.sh` will deploy it to Bunya.
-It needs interactive authentication so it's not the most practical thing. You can always copy `gdtk_container.sif` manually.
-
-`test.sh` can be run on bunya to actually use the container. It uses `apptainer run`, pulling a fresh copy to access a shell in the container.
-```sh
-apptainer shell <path-to-container>.sif
-```
-NOTE: Only the user specified of default bindmounts (such as your home directory) will be writable.
+# Deploying to ghcr
+see .github/workflows/build-deploy.yml
