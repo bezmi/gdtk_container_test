@@ -15,10 +15,10 @@ There should be a compressed container image in the directory where you ran the 
 ```sh
 apptainer run gdtk_container.sif
 
-
-NOTE: if you're on Bunya, then you need to do this from a compute node. The login node doesn't have apptainer. See the `test.sh` script for more details.
 ```
-This will build and install `lmr` in the container.
+NOTE: if you're on Bunya, then you need to do this from a compute node. The login node doesn't have apptainer. See the `test.sh` script for more details.
+
+The command above will build and install `lmr` in the container.
 The repository and install location are set to `$HOME/.local/share/gdtk_container` and can be accessed from the host.
 
 You can use standard `lmr` binaries and their associated commands. Just prefix them with `apptainer exec gdtk_container.sif`.
@@ -29,10 +29,11 @@ apptainer run gdtk_container.sif lmr
 ```
 
 # Test scripts and tips
+
+- `test.sh` can be run on bunya to actually use the container. It uses `apptainer run`, pulling a fresh copy to access a shell in the container.
 - `build.sh` will build the container should be run on your local workstation.
 - `BUNYA_USERNAME=your_username ./deploy.sh` will deploy it to Bunya. It needs interactive authentication so it's not the most practical thing. You can always copy `gdtk_container.sif` manually.
 
-- `test.sh` can be run on bunya to actually use the container. It uses `apptainer run`, pulling a fresh copy to access a shell in the container.
 
 - To run a shell in the container, use:
 ```sh
