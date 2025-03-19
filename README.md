@@ -15,6 +15,8 @@ There should be a compressed container image in the directory where you ran the 
 ```sh
 apptainer run gdtk_container.sif
 
+
+NOTE: if you're on Bunya, then you need to do this from a compute node. The login node doesn't have apptainer. See the `test.sh` script for more details.
 ```
 This will build and install `lmr` in the container.
 The repository and install location are set to `$HOME/.local/share/gdtk_container` and can be accessed from the host.
