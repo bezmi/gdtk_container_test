@@ -37,6 +37,7 @@ jobs:
       - name: Build and push Apptainer image
         uses: uw-psych/apptainer-actions/build-and-push@main
         with:
+          add-tags: latest
           deffile: gdtk_container.def
           image-version: ${{ env.IMAGE_VERSION }}
 
