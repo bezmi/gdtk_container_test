@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+: "${GDTK_CONTAINER:=$HOME/.local/share/gdtk_container/gdtk_container.sif}"
+
+apptainer run $GDTK_CONTAINER
