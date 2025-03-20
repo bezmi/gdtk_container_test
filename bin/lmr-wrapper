@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+: "${GDTK_CONTAINER:=$HOME/.local/share/gdtk_container/gdtk_container.sif}"
+: "${GDTK_DATA:=$HOME/.local/share/gdtk_container/data}"
+
+if [ -z "${GDTK_CONTAINER}" ]; then
+  echo "GDTK_CONTAINER is unset or empty. Aborting."
+  exit 1
+fi
+
+if [ -z "${GDTK_DATA}" ]; then
+  echo "GDTK_DATA is unset or empty. Aborting."
+  exit 1
+fi
+
+CMD=$(basename "$0")
+
+apptainer exec "$GDTK_CONTAINER" "$CMD" "$@"
