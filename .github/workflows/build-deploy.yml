@@ -17,6 +17,9 @@ jobs:
         contents: read
         packages: write
     steps:
+      - name: Echo env
+        shell: bash
+        run: 
       - name: Install Apptainer
         uses: uw-psych/apptainer-actions/setup@main
       - name: Clear disk space
@@ -39,5 +42,7 @@ jobs:
           add-tags: latest
           deffile: gdtk_container.def
           image-version: ${{ env.IMAGE_VERSION }}
+          image-url: |
+            oras://ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ env.IMAGE_VERSION }}
 
 

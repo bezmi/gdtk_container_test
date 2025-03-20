@@ -10,7 +10,7 @@ The host system should have `apptainer` installed, as well as `openmpi >= v5.0.3
 
 First, pull the container from `ghcr`:
 ```sh
-apptainer pull gdtk_container.sif oras://ghcr.io/bezmi/gdtk_container_test/gdtk_container_test:latest
+apptainer pull gdtk_container.sif oras://ghcr.io/bezmi/gdtk_container_test:latest
 ```
 
 There should be a compressed container image in the directory where you ran the command above. Now you can run the container:
