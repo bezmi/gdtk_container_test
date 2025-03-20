@@ -27,7 +27,7 @@ You can use standard `lmr` binaries and their associated commands. Just prefix t
 For example, to run the `lmr` binary, which just outputs a help message:
 
 ```sh
-apptainer run gdtk_container.sif lmr
+apptainer exec gdtk_container.sif lmr
 ```
 
 # Test scripts and tips
