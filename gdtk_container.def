@@ -58,11 +58,12 @@ From: gcc:latest
     # the user home directory on the host in this fashion. If you want to use some other directory,
     # then when calling any apptainer commands, you need to specify the appropriate combo of:
     #        `--bind <host data_dir location>:<the data_dir value below>`.
-    data_dir=$HOME/.local/share/gdtk_container
+    data_dir=$HOME/.local/share/gdtk_container/data
 
 %runscript
     # this script will build lmr and install it in the `data_dir` above.
     # the DGD, DGD_REPO, etc environment variables are set in `%environment` above
+    mkdir -p {{ data_dir }}
     git clone https://github.com/gdtk-uq/gdtk $DGD_REPO
     cd $DGD_REPO/src/lmr
     make INSTALL_DIR=$DGD install
