@@ -17,6 +17,10 @@ jobs:
         contents: read
         packages: write
     steps:
+      - name: Echo URL for visual validation
+        shell: bash
+        run:
+          echo oras://ghcr.io/${{ github.repository }}:${{ github.sha[0:7] }}
       - name: Install Apptainer
         uses: uw-psych/apptainer-actions/setup@main
       - name: Clear disk space
