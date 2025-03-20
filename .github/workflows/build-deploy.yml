@@ -17,9 +17,6 @@ jobs:
         contents: read
         packages: write
     steps:
-      - name: Echo env
-        shell: bash
-        run: 
       - name: Install Apptainer
         uses: uw-psych/apptainer-actions/setup@main
       - name: Clear disk space
