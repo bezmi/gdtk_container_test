@@ -17,10 +17,11 @@ jobs:
         contents: read
         packages: write
     steps:
-      - name: Echo URL for visual validation
-        shell: bash
+      - name: Add SHORT_SHA env property with commit short sha
+        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+      - name: Visually validate container URL
         run:
-          echo oras://ghcr.io/${{ github.repository }}:${{ github.sha[0:7] }}
+          echo oras://ghcr.io/${{ github.repository }}:${{ env.SHORT_SHA }}
       - name: Install Apptainer
         uses: uw-psych/apptainer-actions/setup@main
       - name: Clear disk space
