@@ -40,6 +40,6 @@ jobs:
           deffile: gdtk_container.def
           image-version: ${{ env.IMAGE_VERSION }}
           image-url: |
-            oras://ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ env.IMAGE_VERSION }}
+            oras://ghcr.io/${{ github.repository }}:${{ github.sha[0:7] }}
 
 
