@@ -3,8 +3,8 @@
 # this script can be run on bunya to run a simulation
 
 # specify these if they're different
-: "${GDTK_CONTAINER:=$HOME/gdtk_container.sif}"
-: "${GDTK_DATA:=$HOME/.local/share/gdtk_container}"
+: "${GDTK_CONTAINER:=$HOME/.local/share/gdtk_container/gdtk_container.sif}"
+: "${GDTK_DATA:=$HOME/.local/share/gdtk_container/data}"
 
 # NOTE: before running this on Bunya, you should have an interactive session and the openmpi module loaded:
 #    salloc --nodes=1 --ntasks-per-node=48 --mem=64G --time=1:00:00 --job-name=lmr-apptainer-test --partition=general --account=<account_string>

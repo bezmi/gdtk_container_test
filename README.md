@@ -78,4 +78,6 @@ apptainer build --build-arg openmpi_major_version=v5.0 --build-arg openmpi_relea
 ```
 
 # Deploying to ghcr
-see .github/workflows/build-deploy.yml
+see `.github/workflows/build-deploy.yml`.
+
+The workflow to build the image is triggered when a tagged version is pushed, or via manually triggering it in the github actions.
