@@ -7,8 +7,11 @@ This container is set up to use the hybrid openmpi approach described in the app
 
 # Quickstart (Install script)
 <details>
+
 <summary>A note for users building on the Bunya HPC cluster</summary>
+
 if you're on Bunya, then you need to do this from a compute node. The login node doesn't have apptainer. See the `test.sh` script for more details.
+
 </details>
 
 Run the install script with the command below, or clone this repo and run `install.sh`
@@ -21,7 +24,9 @@ This will put the container and all related files in `$HOME/.local/share/gdtk_co
 Running `source $HOME/.local/share/gdtk_container/env` will add the wrapper scripts to your `PATH`, so calling `lmr` executables (`lmr`, `lmr-run`, `lmrZ-run`, etc) will automatically prefix the commands to run them in the container.
 
 <details>
+
 <summary>List of executables that are currently wrapped</summary>
+
 - `lmr` (also: `lmr-debug`)
 - `lmr-verify`
 - `lmr-run` (also: `lmrZ-run`, `lmr-mpi-run`, `lmrZ-mpi-run`)
@@ -29,20 +34,27 @@ Running `source $HOME/.local/share/gdtk_container/env` will add the wrapper scri
 - `ugrid_partition`, `species-data-converter`, `chemkin2eilmer`
 - `dgd-lua`, `dgd-luac`
 - `python3` (also: `python`, which is just a symlink to `python3`)
+
 </details>
 
 <details>
+
 <summary>My program isn't in the list of wrapped executables. How do I run an arbitrary executable within the container?</summary>
+
 `lmr-wrapper <path-to-executable-in-container>` can be used to run an arbitrary executable in the container, as long as it is accessible from inside the container. This script is located in the `bin` directory within `~/.local/share/gdtk_container`.
 By default the host user `$HOME` directory is accessible at the same location from inside the container, [but other directories might need to use the correct bind arguments when running this command](https://apptainer.org/docs/user/main/bind_paths_and_mounts.html)
 
 You can also just use `apptainer exec <path-to-executable-in-container>`.
+
 </details>
 
 <details>
+
 <summary>How do I start a shell within the container?</summary>
+
 You can run `apptainer shell $HOME/.local/share/gdtk_container/gdtk_container.sif`.
 Alternatively, `lmr-shell` is a shorthand if you installed the helper executables.
+
 </details>
 
 ## Making changes to the `lmr` source code
@@ -65,8 +77,11 @@ bash <(wget -qO - https://raw.githubusercontent.com/bezmi/gdtk_container_test/re
 
 # Installing manually from github container repository
 <details>
+
 <summary>NOTE: not recommended</summary>
+
 But if you must, [then calling the install script with the built container will give you the extra goodies](#if-you-built-the-container-locally)
+
 </details>
 
 First, pull the container from `ghcr`:
