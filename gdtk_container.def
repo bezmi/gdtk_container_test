@@ -15,6 +15,9 @@ From: gcc:latest
     export DGD_LUA_CPATH=$DGD/lib/?.so
 
 %post
+    # symlink /usr/bin/python3 to /usr/bin/python
+    ln -s /usr/bin/python3 /usr/bin/python
+
     # this container uses the hybrid container approach, so we build an appropriate version of openmpi
     mkdir -p /tmp/openmpi
     cd /tmp/openmpi && wget "https://download.open-mpi.org/release/open-mpi/{{ openmpi_major_version }}/{{ openmpi_release_name }}.tar.bz2" && tar -xjf {{ openmpi_release_name}}.tar.bz2

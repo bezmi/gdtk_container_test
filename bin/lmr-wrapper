@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# This script is a wrapper for running things in the gdtk container.
+# Symlinking this script to the name of the executable you want to run will
+# prepend `apptainer exec $GDTK_CONTAINER` to the command.
+#
+# Alternatively, you can call `lmr-wrapper <path-to-executable-in-container>`
+
 : "${GDTK_CONTAINER:=$HOME/.local/share/gdtk_container/gdtk_container.sif}"
 : "${GDTK_DATA:=$HOME/.local/share/gdtk_container/data}"
 
@@ -14,5 +20,16 @@ if [ -z "${GDTK_DATA}" ]; then
 fi
 
 CMD=$(basename "$0")
+ARGS="${@:1}"
 
-apptainer exec "$GDTK_CONTAINER" "$CMD" "$@"
+if [ $CMD == "lmr-wrapper" ]; then
+  if [ -z $1 ]; then
+    echo "Usage: lmr-wrapper <path-to-executable-in-container>"
+    exit 1
+  fi
+  CMD=$(basename "$1")
+  ARGS="${@:2}"
+fi
+
+apptainer exec "$GDTK_CONTAINER" "$CMD" "$ARGS"
+

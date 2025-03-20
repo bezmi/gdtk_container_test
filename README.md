@@ -5,8 +5,69 @@ Running the container builds and installs `lmr`.
 
 This container is set up to use the hybrid openmpi approach described in the apptainer docs. It should be very easy to convert it to use the bind based approach as long as the HPC system has a sane layout for the location of the openmpi binaries and libraries.
 
-# Quickstart
-The host system should have `apptainer` installed, as well as `openmpi >= v5.0.3` (if you want to use the mpi executables)
+# Quickstart (Install script)
+<details>
+<summary>A note for users building on the Bunya HPC cluster</summary>
+if you're on Bunya, then you need to do this from a compute node. The login node doesn't have apptainer. See the `test.sh` script for more details.
+<details>
+
+Run the install script with the command below, or clone this repo and run `install.sh`
+```sh
+bash <(wget -qO - https://raw.githubusercontent.com/bezmi/gdtk_container_test/refs/heads/main/install.sh)
+```
+This will put the container and all related files in `$HOME/.local/share/gdtk_container`
+
+
+Running `source $HOME/.local/share/gdtk_container/env` will add the wrapper scripts to your `PATH`, so calling `lmr` executables (`lmr`, `lmr-run`, `lmrZ-run`, etc) will automatically prefix the commands to run them in the container.
+
+<details>
+<summary>List of executables that are currently wrapped</summary>
+- `lmr` (also: `lmr-debug`)
+- `lmr-verify`
+- `lmr-run` (also: `lmrZ-run`, `lmr-mpi-run`, `lmrZ-mpi-run`)
+- `prep-chem`, `prep-gas`, `prep-kinetics`
+- `ugrid_partition`, `species-data-converter`, `chemkin2eilmer`
+- `dgd-lua`, `dgd-luac`
+- `python3` (also: `python`, which is just a symlink to `python3`)
+</details>
+
+<details>
+<summary>My program isn't in the list of wrapped executables. How do I run an arbitrary executable within the container?</summary>
+`lmr-wrapper <path-to-executable-in-container>` can be used to run an arbitrary executable in the container, as long as it is accessible from inside the container. This script is located in the `bin` directory within `~/.local/share/gdtk_container`.
+By default the host user `$HOME` directory is accessible at the same location from inside the container, [but other directories might need to use the correct bind arguments when running this command](https://apptainer.org/docs/user/main/bind_paths_and_mounts.html)
+
+You can also just use `apptainer exec <path-to-executable-in-container>`.
+</details>
+
+<details>
+<summary>How do I start a shell within the container?</summary>
+You can run `apptainer shell $HOME/.local/share/gdtk_container/gdtk_container.sif`.
+Alternatively, `lmr-shell` is a shorthand if you installed the helper executables.
+</details>
+
+## Making changes to the `lmr` source code
+This container can be used for development or `lmr`.
+
+First, ensure that `apptainer run $GDTK_CONTAINER` has been called (NOTE: `$GDTK_CONTAINER` is only available if you sourced the `env` file following the instructions above. Use `$HOME/.local/share/gdtk_container/gdtk_container.sif` if you didn't).
+
+You can now access and modify the source code from the host at `$HOME/.local/share/gdtk_container/data/gdtk`. Using `apptainer run $GDTK_CONTAINER` will rebuild and reinstall the updated `lmr`
+The `lmr-build` command is a shorthand for this.
+
+## If you built the container locally
+Provide the path to the built `gdtk_container.sif` as a single argument to `install.sh`.
+It will use this path instead of pulling the container from the container repository.
+
+If you want to use it without cloning the repo:
+```sh
+bash <(wget -qO - https://raw.githubusercontent.com/bezmi/gdtk_container_test/refs/heads/main/install.sh) /path/to/gdtk_container.sif
+
+```
+
+# Installing manually from github container repository
+<details>
+<summary>NOTE: not recommended</summary>
+But if you must, [then calling the install script with the built container will give you the extra goodies](#if-you-built-the-container-locally)
+</details>
 
 First, pull the container from `ghcr`:
 ```sh
@@ -16,34 +77,14 @@ apptainer pull gdtk_container.sif oras://ghcr.io/bezmi/gdtk_container_test:lates
 There should be a compressed container image in the directory where you ran the command above. Now you can run the container:
 ```sh
 apptainer run gdtk_container.sif
-
-```
-NOTE: if you're on Bunya, then you need to do this from a compute node. The login node doesn't have apptainer. See the `test.sh` script for more details.
-
-The command above will build and install `lmr` in the container.
-The repository and install location are set to `$HOME/.local/share/gdtk_container` and can be accessed from the host.
-
-You can use standard `lmr` binaries and their associated commands. Just prefix them with `apptainer exec gdtk_container.sif`.
-For example, to run the `lmr` binary, which just outputs a help message:
-
-```sh
-apptainer exec gdtk_container.sif lmr
 ```
 
-# Test scripts and tips
+# Utility scripts and tips
+- `util/build.sh` will build the container should be run on your local workstation.
 
-- `test.sh` can be run on bunya to actually use the container. It uses `apptainer run`, pulling a fresh copy to access a shell in the container.
-- `build.sh` will build the container should be run on your local workstation.
-- `BUNYA_USERNAME=your_username ./deploy.sh` will deploy it to Bunya. It needs interactive authentication so it's not the most practical thing. You can always copy `gdtk_container.sif` manually.
+# Building the dev container locally.
+NOTE: this may take a while as the openmpi library must be compiled.
 
-
-- To run a shell in the container, use:
-```sh
-apptainer shell <path-to-container>.sif
-```
-NOTE: Only the user specified of default bindmounts (such as your home directory) will be writable.
-
-# Building locally.
 If you want to change openmpi versions, gdtk install path or the `gcc`, `ldc` or `dub` versions, then you should build locally.
 
 First, clone this repo
@@ -70,14 +111,17 @@ appending `--writable` to commands such as `run` and `shell` will allow changes 
 
 Best practice is use `--writable` when developing/creating the container, then add them to the definition file when you're happy.
 
-### Build options
+## Build options
 See the `%arguments` section of `gdtk_container.def`.
 For example, to change the openmpi version that gets downloaded and installed, you can do
 ```sh
 apptainer build --build-arg openmpi_major_version=v5.0 --build-arg openmpi_release_name=openmpi-5.0.3 <container-name>.sif gdtk_container.def
 ```
 
-# Deploying to ghcr
-see `.github/workflows/build-deploy.yml`.
+## Installing a locally built container
+See: [If you built the container locally](#if-you-built-the-container-locally)
 
-The workflow to build the image is triggered when a tagged version is pushed, or via manually triggering it in the github actions.
+# Deploying to ghcr
+Checkout the workflow in the file `.github/workflows/build-deploy.yml`.
+
+The workflow to build the image is triggered when a tagged version is pushed, or via manually triggering it in the github actions UI.

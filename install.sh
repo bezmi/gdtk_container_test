@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# this script can be run on bunya to run a simulation
-
-
 # GDTK_CONTAINER_DIR is a location that will contain all relevant files, including the container and lmr installation
 : "${GDTK_CONTAINER_DIR:=$HOME/.local/share/gdtk_container}"
 
@@ -30,8 +27,13 @@ mkdir -p $GDTK_CONTAINER_DIR
 GDTK_CONTAINER=$GDTK_CONTAINER_DIR/gdtk_container.sif
 
 echo
-echo "Pulling container into $GDTK_CONTAINER"
-apptainer pull $GDTK_CONTAINER oras://ghcr.io/bezmi/gdtk_container_test:latest
+if [ ! -z "$1" ]; then
+    echo "Copying local gdtk_container sif to $GDTK_CONTAINER"
+    cp $1 $GDTK_CONTAINER
+else
+    echo "Pulling container into $GDTK_CONTAINER"
+    apptainer pull $GDTK_CONTAINER oras://ghcr.io/bezmi/gdtk_container_test:latest
+fi
 
 do_install_bin() {
     echo "Creating directory $GDTK_CONTAINER_DIR/bin"
@@ -109,9 +111,8 @@ while true; do
     esac
 done
 
-
-echo "export GDTK_CONTAINER=$GDTK_CONTAINER" >> $GDTK_CONTAINER_DIR/env
-echo "export PATH=$GDTK_CONTAINER_DIR/bin:$PATH" >> $GDTK_CONTAINER_DIR/env
+echo 'export GDTK_CONTAINER='"$GDTK_CONTAINER" >> $GDTK_CONTAINER_DIR/env
+echo 'export PATH='"${GDTK_CONTAINER_DIR}"'/bin:$PATH' >> $GDTK_CONTAINER_DIR/env
 
 echo
 echo "Installation complete. Run 'source $GDTK_CONTAINER_DIR/env' to update your PATH"

@@ -6,4 +6,4 @@
 # specify these if you want them to be different
 : "${GDTK_CONTAINER:=$(pwd)/gdtk_container.sif}"
 
-apptainer build $GDTK_CONTAINER gdtk_container.def
+apptainer build $GDTK_CONTAINER ../gdtk_container.def
