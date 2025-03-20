@@ -9,7 +9,7 @@ This container is set up to use the hybrid openmpi approach described in the app
 <details>
 <summary>A note for users building on the Bunya HPC cluster</summary>
 if you're on Bunya, then you need to do this from a compute node. The login node doesn't have apptainer. See the `test.sh` script for more details.
-<details>
+</details>
 
 Run the install script with the command below, or clone this repo and run `install.sh`
 ```sh
