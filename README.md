@@ -65,6 +65,8 @@ First, ensure that `apptainer run $GDTK_CONTAINER` has been called (NOTE: `$GDTK
 You can now access and modify the source code from the host at `$HOME/.local/share/gdtk_container/data/gdtk`. Using `apptainer run $GDTK_CONTAINER` will rebuild and reinstall the updated `lmr`
 The `lmr-build` command is a shorthand for this.
 
+Note, `lmr-build` and `apptainer run ...` build `lmr` with `FLAVOUR=fast`. For development, it's probably better to use `FLAVOUR=debug`, so you should probably write your own wrapper script that calls `apptainer exec make ...` if you want to specify build options in more detail.
+
 ## If you built the container locally
 Provide the path to the built `gdtk_container.sif` as a single argument to `install.sh`.
 It will use this path instead of pulling the container from the container repository.
