@@ -69,4 +69,4 @@ From: gcc:latest
     mkdir -p {{ data_dir }}
     git clone https://github.com/gdtk-uq/gdtk $DGD_REPO
     cd $DGD_REPO/src/lmr
-    make INSTALL_DIR=$DGD install
+    make FLAVOUR=fast INSTALL_DIR=$DGD install
